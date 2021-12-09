@@ -16,15 +16,25 @@ export default class AddNote extends Component {
         console.log(this.state.text)
         console.log()
         console.log()
+        let keys
+        let key
+        if (await this.getKeys() != null) {
+            keys = (await this.getKeys()).split(',')
+            key = parseInt(keys[keys.length - 1]) + 1
+        }else{
+            keys = []
+            key = 1
+        }
 
-        let keys = (await this.getKeys()).split(',')
-        let key = keys
-        key = parseInt(key[key.length - 1]) + 1
         keys.push(key.toString())
-        console.log(keys)
+        
 
         keys = keys.join(',')
-        let data = { title: this.state.title, text: this.state.text, date: (date.getDate() + '.' + (date.getMonth() + 1)) }
+        console.log('KLUCZE')
+        console.log(keys)
+        console.log(key)
+        console.log('KLUCZE END')
+        let data = { title: this.state.title, text: this.state.text, date: (date.toISOString().split('T')[0]), key: key }
         this.saveItem('keys', keys)
         this.saveItem(key.toString(), JSON.stringify(data))
         window.setTimeout(() => { this.props.navigation.navigate("list", { key: Math.floor(Math.random() * (999999)) }) }, 400)

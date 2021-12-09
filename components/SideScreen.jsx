@@ -11,8 +11,8 @@ export default function SideScreen(props) {
 
             <DrawerItem
                 label="test"
-                icon={() => <Image />}
-                onPress={() => console.log("test")}
+                icon={() => <Image style={{ width: 45, height: 45 }} source={require('../assets/info.png')} />}
+                onPress={() => alert("test")}
             />
 
         </DrawerContentScrollView>
@@ -20,4 +20,3 @@ export default function SideScreen(props) {
 
 }
 
-const styles = StyleSheet.create({})

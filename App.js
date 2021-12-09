@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { LogBox } from 'react-native'
+import { LogBox, Image } from 'react-native'
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import Note from './components/Note'
@@ -28,8 +28,15 @@ export default function App(props) {
   );
 }
 //options={screenOpt.list}
+const ico = {
+  CSS: {
+    width: 35,
+    height: 35
+  }
+}
 const screenOpt = {
   list: {
+    drawerIcon: () => (<Image style={ico.CSS} source={require('./assets/note.png')} />),
     title: 'Notes',
     headerStyle: {
       backgroundColor: '#404EED',
@@ -41,6 +48,7 @@ const screenOpt = {
     headerShown: true
   },
   add: {
+    drawerIcon: () => (<Image style={ico.CSS} source={require('./assets/add.png')} />),
     title: 'Add Note',
     headerStyle: {
       backgroundColor: '#404EED',
