@@ -19,7 +19,7 @@ export default class NoteList extends Component {
             key: this.props.route.params.key ? this.props.route.params.key : 123,
             colors: ['#EF476F', '#FFD166', '#06D6A0', '#118AB2', '#073B4C'],
             data: [],
-            search:''
+            search: ''
         }
     }
     async componentDidUpdate(prevProps, prevState) {
@@ -114,10 +114,24 @@ export default class NoteList extends Component {
         this.setState({ key: Math.floor(Math.random() * (999999999999)) })
         console.log('deleted')
     }
+    search(a) {
+        console.log('aaaaaaaaaaaa')
+        console.log(a.title);
+        console.log(this.state.search);
+        try{
+        return ('' == this.state.search || a.title.slice(0,this.state.search.length) == this.state.search || a.text.slice(0,this.state.search.length) == this.state.search || a.category.slice(0,this.state.search.length) == this.state.search) 
+        } catch (error) {
+        return true
+        }
+    }
+    async editNote(key){
+        let data = await this.getItem(key.toString())
+        this.props.navigation.navigate("edit", { key: key.toString(), title:data.title, text: data.text })
+    }
     render() {
 
         const renderItem = ({ item }, color = Math.floor(Math.random() * (5))) => (
-            <TouchableOpacity onLongPress={this.delAlert.bind(this, item.key)} style={{ padding: 15, borderRadius: 20, marginTop: 10, flex: 1 / 2.2, height: 150, backgroundColor: this.state.colors[color] }}>
+            <TouchableOpacity onPress={this.editNote.bind(this, item.key)} onLongPress={this.delAlert.bind(this, item.key)} style={{ padding: 15, borderRadius: 20, marginTop: 10, flex: 1 / 2.2, height: 150, backgroundColor: this.state.colors[color] }}>
 
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
                     <Text numberOfLines={1} style={[styles.category, { color: this.state.colors[color] }]}>{item.category == null ? 'BRAK' : item.category}</Text>
@@ -130,7 +144,6 @@ export default class NoteList extends Component {
 
             </TouchableOpacity>
         );
-        const { isFocused } = this.props;
         return (
             <View>
 
@@ -143,7 +156,7 @@ export default class NoteList extends Component {
 
                 <FlatList
                     columnWrapperStyle={{ justifyContent: 'space-evenly' }}
-                    data={this.state.data}
+                    data={this.state.data.filter(this.search.bind(this))}
                     renderItem={renderItem}
                     keyExtractor={item => item.key}
                     style={styles.flatlist}
@@ -177,8 +190,8 @@ const styles = StyleSheet.create({
         padding: 3,
         maxWidth: 60
     },
-    search:{
-        backgroundColor:'lightgray',
+    search: {
+        backgroundColor: 'lightgray',
         borderRadius: 25,
         margin: 10,
         height: 40,

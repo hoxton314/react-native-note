@@ -3,14 +3,16 @@ import { Text, StyleSheet, View, TextInput, Button } from 'react-native'
 import * as SecureStore from 'expo-secure-store';
 import { Picker } from '@react-native-picker/picker';
 
-export default class AddNote extends Component {
+export default class EditNote extends Component {
     constructor(props) {
         super(props)
         this.state = {
             title: '',
             text: '',
-            cat: null,
-            stringTab: ['a', 'b', 'c']
+            cat: 'BRAK',
+            date: '',
+            stringTab: [],
+            key: this.props.route.params.key
         }
         this.funkcja = null
         this.catUpd()
@@ -31,10 +33,37 @@ export default class AddNote extends Component {
             categories = 'BRAK'
         }
         categories = categories.split(',')
-        this.setState({ stringTab: categories, cat: categories[0] })
+        let old = await this.getItem((this.state.key).toString())
+        old=JSON.parse(old)
+        console.log(old)
+        this.setState({ stringTab: categories, cat: categories[0], title: old.title, text: old.text, date: old.date, cat: old.category })
+
+
     }
-    componentDidUpdate(prevProps, prevState){
-        
+    async componentDidUpdate(prevProps, prevState) {
+        if (prevProps != this.props) {
+            this.setState({ key: this.props.route.params.key })
+
+            let categories
+            if (await this.getCategories() != null) {
+                categories = await this.getCategories()
+            } else {
+                categories = 'BRAK'
+            }
+            categories = categories.split(',')
+            console.log(this.props.route.params.key)
+            let old = await SecureStore.getItemAsync(this.props.route.params.key) 
+            old=JSON.parse(old)
+            
+            this.setState({ stringTab: categories, cat: categories[0], title: old.title, text: old.text, date: old.date, cat: old.category })
+               
+            
+
+
+        }
+        if(prevState.text!=this.state.text){
+            console.log('DID UPDATE', this.state.text)
+        }
     }
     async catUpd() {
         while (true) {
@@ -49,41 +78,18 @@ export default class AddNote extends Component {
             this.setState({ stringTab: categories })
         }
     }
-    async addNote() {
-        let date = new Date()
-        console.log(this.state.title)
-        console.log(this.state.text)
-        console.log()
-        console.log()
-        let keys
-        let key
-        if (await this.getKeys() != null) {
-            keys = (await this.getKeys()).split(',')
-            key = parseInt(keys[keys.length - 1]) + 1
-        } else {
-            keys = []
-            key = 1
-        }
-
-        keys.push(key.toString())
-
-
-        keys = keys.join(',')
-        console.log('KLUCZE')
-        console.log(keys)
-        console.log(key)
-        console.log('KLUCZE END')
-        let data = { title: this.state.title, text: this.state.text, date: (date.toISOString().split('T')[0]), key: key, category: this.state.cat }
-        this.saveItem('keys', keys)
-        this.saveItem(key.toString(), JSON.stringify(data))
+    async updateNote() {
+        //let date = new Date()
+        let data = { title: this.state.title, text: this.state.text, date: this.state.date, key: this.state.key, category: this.state.cat }
+        this.saveItem(this.props.route.params.key, JSON.stringify(data))
         window.setTimeout(() => { this.props.navigation.navigate("list", { key: Math.floor(Math.random() * (999999)) }) }, 400)
 
     }
     async saveItem(key, value) {
         await SecureStore.setItemAsync(key, value);
     }
-    async getKeys() {
-        let result = await SecureStore.getItemAsync('keys');
+    async getItem(key) {
+        let result = await SecureStore.getItemAsync(key);
         return result
     }
     async getCategories() {
@@ -110,30 +116,36 @@ export default class AddNote extends Component {
         return (
             <View style={styles.main}>
                 <View style={{ width: '80%', }}>
-                    <Text style={{ fontSize: 30 }}> Note </Text>
+                    <Text style={{ fontSize: 30 }}> Edit {this.state.key} </Text>
                     <TextInput
                         underlineColorAndroid="#404EED"
                         placeholder="Title"
+                        value={this.state.title}
                         onChangeText={(text) => this.setState({ title: text })}
                         style={styles.textinput}
+                        defaultValue={this.props.route.params.title}
                     />
                     <TextInput
                         underlineColorAndroid="#404EED"
                         placeholder="Note"
+                        value={this.state.text}
                         onChangeText={(text) => this.setState({ text: text })}
                         style={styles.textinput}
+                        defaultValue={this.props.route.params.text}
+                        multiline={true}
                     />
                     <Picker
                         selectedValue={this.state.cat}
+                        value={this.state.cat}
                         onValueChange={(val) => { this.setState({ cat: val }) }}>
                         {/* {this.genPickItems()} */}
                         {
-                            this.state.stringTab.map(a => { return <Picker.Item label={a} value={a} /> })
+                            this.state.stringTab.map(a => { return <Picker.Item label={a} value={a} key={a} /> })
                         }
 
                     </Picker>
                     <Button
-                        onPress={this.addNote.bind(this)}
+                        onPress={this.updateNote.bind(this)}
                         title="Add"
                         color="#5865F2"
                     />

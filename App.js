@@ -4,8 +4,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LogBox, Image } from 'react-native'
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
-import Note from './components/Note'
 import AddNote from './components/AddNote'
+import EditNote from './components/EditNote'
 import NoteList from './components/NoteList'
 import SideScreen from './components/SideScreen'
 import AddCategory from './components/AddCategory'
@@ -21,13 +21,13 @@ export default function App(props) {
     <NavigationContainer>
 
       <Drawer.Navigator drawerContent={(props) => <SideScreen {...props} />}>
-        
+
         <Drawer.Screen name="list" component={NoteList} options={screenOpt.list} initialParams={{ key: 123 }} />
         {/* <Drawer.Screen name="note" component={Note} /> */}
         <Drawer.Screen name="add" component={AddNote} options={screenOpt.add} />
         {/* <Drawer.Screen name="side" component={SideScreen} options={screenOpt.side} /> */}
         <Drawer.Screen name="addCat" component={AddCategory} options={screenOpt.addCat} />
-
+        <Drawer.Screen name="edit" component={EditNote} options={screenOpt.edit} initialParams={{ key: '1' }}/>
       </Drawer.Navigator>
     </NavigationContainer>
   );
@@ -75,6 +75,18 @@ const screenOpt = {
       fontWeight: 'bold',
     },
     headerShown: true
+  },
+  edit: {
+    title: '',
+    height:0,
+    headerStyle: {
+      backgroundColor: '#404EED',
+    },
+    headerTintColor: '#ffffff',
+    headerTitleStyle: {
+      fontWeight: 'normal',
+    },
+    headerShown: true,
   },
   splash: {
     title: '',
