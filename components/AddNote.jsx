@@ -51,15 +51,15 @@ export default class AddNote extends Component {
         return (
             <View style={styles.main}>
                 <View style={{ width: '80%', }}>
-                    <Text> Note </Text>
+                    <Text style={{fontSize: 30}}> Note </Text>
                     <TextInput
-                        underlineColorAndroid="#ff0000"
+                        underlineColorAndroid="#404EED"
                         placeholder="Title"
                         onChangeText={(text) => this.setState({ title: text })}
                         style={styles.textinput}
                     />
                     <TextInput
-                        underlineColorAndroid="#ff0000"
+                        underlineColorAndroid="#404EED"
                         placeholder="Note"
                         onChangeText={(text) => this.setState({ text: text })}
                         style={styles.textinput}

@@ -6,13 +6,19 @@ export default function SideScreen(props) {
 
     return (
         <DrawerContentScrollView {...props}>
-
+            <DrawerItem
+                label=""
+                icon={() => <Image style={{ width: 128, height: 128 }} source={require('../assets/pencil.png')} />}
+                onPress={() => {}}
+                style={{marginLeft:'auto'}}
+            />
+            
             <DrawerItemList {...props} />
 
             <DrawerItem
-                label="test"
+                label="info"
                 icon={() => <Image style={{ width: 45, height: 45 }} source={require('../assets/info.png')} />}
-                onPress={() => alert("test")}
+                onPress={() => alert("Notatnik v2")}
             />
 
         </DrawerContentScrollView>

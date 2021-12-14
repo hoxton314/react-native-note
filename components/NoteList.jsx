@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, StyleSheet, View, TouchableOpacity, Alert } from 'react-native'
+import { Text, StyleSheet, View, TouchableOpacity, Alert, TextInput } from 'react-native'
 import * as SecureStore from 'expo-secure-store';
 import { FlatList } from 'react-native-gesture-handler';
 import { useIsFocused } from '@react-navigation/native';
@@ -18,7 +18,8 @@ export default class NoteList extends Component {
         this.state = {
             key: this.props.route.params.key ? this.props.route.params.key : 123,
             colors: ['#EF476F', '#FFD166', '#06D6A0', '#118AB2', '#073B4C'],
-            data: []
+            data: [],
+            search:''
         }
     }
     async componentDidUpdate(prevProps, prevState) {
@@ -35,7 +36,7 @@ export default class NoteList extends Component {
                 await new Promise(resolve => setTimeout(resolve, 100));
             }
             console.log(data)
-            this.setState({ data: data.filter(note=>note!=null)  })
+            this.setState({ data: data.filter(note => note != null) })
 
 
             this.setState({ key: this.props.route.params.key })
@@ -54,7 +55,7 @@ export default class NoteList extends Component {
         //this.saveItem("keys", "1,2,3")
         //Math.floor(Math.random() * (999999999999))
         console.log(await this.getItem("keys"))
-        if (await this.getItem("keys")!=null) {
+        if (await this.getItem("keys") != null) {
             let keys = (await this.getItem("keys")).split(',')
             console.log(keys)
             let data = []
@@ -67,8 +68,8 @@ export default class NoteList extends Component {
                 await new Promise(resolve => setTimeout(resolve, 100));
             }
             console.log(data)
-            
-            this.setState({ data: data.filter(note=>note!=null) })
+
+            this.setState({ data: data.filter(note => note != null) })
         }
     }
     async saveItem(key, value) {
@@ -85,14 +86,14 @@ export default class NoteList extends Component {
             [
                 {
                     text: "Cancel",
-                    onPress: () => {console.log("Cancel Pressed")},
+                    onPress: () => { console.log("Cancel Pressed") },
                     style: "cancel"
                 },
                 { text: "OK", onPress: this.delete.bind(this, key) }
             ]
         )
     }
-    async delete(key){
+    async delete(key) {
         console.log(key)
         await SecureStore.deleteItemAsync(key.toString());
 
@@ -108,22 +109,22 @@ export default class NoteList extends Component {
             await new Promise(resolve => setTimeout(resolve, 100));
         }
         console.log(data)
-        this.setState({ data: data.filter(note=>note!=null)  })
-        
-        this.setState({key:Math.floor(Math.random() * (999999999999))})
-        console.log('deleted')
+        this.setState({ data: data.filter(note => note != null) })
 
+        this.setState({ key: Math.floor(Math.random() * (999999999999)) })
+        console.log('deleted')
     }
     render() {
 
-        const renderItem = ({ item }) => (
-            <TouchableOpacity onLongPress={this.delAlert.bind(this, item.key)} style={{ padding: 15, borderRadius: 20, marginTop: 10, flex: 1 / 2.2, height: 150, backgroundColor: this.state.colors[Math.floor(Math.random() * (5))] }}>
+        const renderItem = ({ item }, color = Math.floor(Math.random() * (5))) => (
+            <TouchableOpacity onLongPress={this.delAlert.bind(this, item.key)} style={{ padding: 15, borderRadius: 20, marginTop: 10, flex: 1 / 2.2, height: 150, backgroundColor: this.state.colors[color] }}>
 
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
-                    <Text numberOfLines={1} style={styles.title}>{item.title}</Text>
+                    <Text numberOfLines={1} style={[styles.category, { color: this.state.colors[color] }]}>{item.category == null ? 'BRAK' : item.category}</Text>
                     <Text style={styles.date}>{item.date}</Text>
                 </View>
                 <View>
+                    <Text numberOfLines={1} style={styles.title}>{item.title}</Text>
                     <Text numberOfLines={6} style={styles.txt}>{item.text}</Text>
                 </View>
 
@@ -132,6 +133,13 @@ export default class NoteList extends Component {
         const { isFocused } = this.props;
         return (
             <View>
+
+                <TextInput
+                    underlineColorAndroid="rgba(0,0,0,0)"
+                    placeholder="Search"
+                    onChangeText={(text) => this.setState({ search: text })}
+                    style={styles.search}
+                />
 
                 <FlatList
                     columnWrapperStyle={{ justifyContent: 'space-evenly' }}
@@ -155,14 +163,26 @@ const styles = StyleSheet.create({
     },
     title: {
         color: 'white',
-        width:60,
+        fontWeight: 'bold'
     },
-    date:{
+    date: {
         color: 'white'
     },
-    txt:{
+    txt: {
         color: 'white'
     },
+    category: {
+        backgroundColor: 'white',
+        borderRadius: 10,
+        padding: 3,
+        maxWidth: 60
+    },
+    search:{
+        backgroundColor:'lightgray',
+        borderRadius: 25,
+        margin: 10,
+        height: 40,
+    }
 
 
 })
